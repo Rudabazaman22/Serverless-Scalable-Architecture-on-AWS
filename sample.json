@@ -1,0 +1,31 @@
+[
+  {
+    "user_id": "U001",
+    "action": "login",
+    "username": "rudaba",
+    "password": "12345"
+  },
+  {
+    "user_id": "U002",
+    "action": "check_subscription",
+    "subscription_id": "SUB1002"
+  },
+  {
+    "user_id": "U003",
+    "action": "generate_invoice",
+    "month": "September",
+    "year": 2025
+  },
+  {
+    "user_id": "U004",
+    "action": "generate_highlight",
+    "match_id": "GER-BRA-2025"
+  },
+  {
+    "user_id": "U005",
+    "action": "send_email_notification",
+    "email": "user@example.com",
+    "subject": "Match Summary",
+    "body": "Thanks for watching the match!"
+  }
+]
