@@ -1,0 +1,54 @@
+name: Deploy Serverless Async Infra
+
+on:
+  push:
+    branches:
+      - feature/serverless-projects
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Zip Lambda functions
+        working-directory: aws-serverless-async-project
+        run: |
+          cd lambda_sync && zip -r ../lambda_sync.zip . && cd ..
+          cd lambda_async && zip -r ../lambda_async.zip . && cd ..
+          cd lambda_worker && zip -r ../lambda_worker.zip . && cd ..
+          mv *.zip terraform/
+
+      - name: Terraform Init
+        run: terraform -chdir=aws-serverless-async-project/terraform init
+
+      - name: Terraform Validate
+        run: terraform -chdir=aws-serverless-async-project/terraform validate
+
+      - name: Terraform Plan
+        run: terraform -chdir=aws-serverless-async-project/terraform plan
+
+      - name: Terraform Apply
+        run: terraform -chdir=aws-serverless-async-project/terraform apply -auto-approve
+
+      - name: Show Outputs
+        run: terraform -chdir=aws-serverless-async-project/terraform output
+
